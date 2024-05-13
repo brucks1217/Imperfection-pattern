@@ -1,6 +1,24 @@
+# Important Notice : 
+Currently, for reading csv file the script uses "Pandas" module.
+
+However, the memory (RAM) usage efficiency of "Pandas" is terrible.
+
+Tried to use "Numpy" instead, but still it uses lots of memory while processing sequence encoding ( Prefx length + Zero padding ),
+
+so terminal kills the operation.
+
+Hence, I'm working on processing sequence encoding using "PyArrow" library or "Datatable" library. 
+
+Moreover, current datasets in this github repo are not cleaned ( BPIC11, BPIC15_1 )
+and also, don't have outcome label.
+
+So, it will be substituted with cleaned one from  : https://drive.google.com/open?id=154hcH-HGThlcZJW5zBvCJMZvjOQDsnPR
+
+
+
 # Datasets
-+ BPIC11 : will be changed into cleaned one (TBC) 
-+ BPIC15_1 : will be changed into cleaned one (TBC) 
++ BPIC11 : will be substituted with cleaned one (TBC) 
++ BPIC15_1 : will be substituted with cleaned one (TBC) 
 + credit-card-new
 + pub-new
 
