@@ -65,6 +65,7 @@ pip install -r requirements.txt
 Argument Parser for generating Train/ Test set 
 + --dataset : name of your csv file ( choices : "BPIC11.csv", "BPIC15_1.csv", "credit-card-new.csv", "pub-new.csv" )
 + --task : PPM task ( choices : "next_activity", "outcome", "event_remaining_time", "case_remaining_time" )
++ + Remind that "outcome" task is only available with "BPIC15_1.csv" dataset
 + (Optional) --filepath : dataset location ( default='data/datasets/' )
 + (Optional) --saveloc : processed train/ test set save location ( default='data/processed/' )
 
