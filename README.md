@@ -5,7 +5,7 @@ However, the memory (RAM) usage efficiency of "Pandas" is terrible.
 
 Tried to use "Numpy" instead, but still it uses lots of memory while processing sequence encoding ( Prefx length + Zero padding ),
 
-so terminal kills the operation.
+so terminal kills the operation. ( Only in BPIC11 )
 
 Hence, I'm working on processing sequence encoding using "PyArrow" library or "Datatable" library. 
 
