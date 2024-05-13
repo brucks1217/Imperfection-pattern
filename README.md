@@ -69,7 +69,7 @@ But remind that this will be modified during substituting the event logs ( BPIC1
 Argument Parser for training/ testing model
 + --dataset : name of your csv file ( choices : "BPIC11.csv", "BPIC15_1.csv", "credit-card-new.csv", "pub-new.csv" )
 + --task : PPM task ( choices : "next_activity", "outcome", "event_remaining_time", "case_remaining_time" )
-+ (Optional) --meta : just meta info of train/test set ( output dimension, max prefix length, number of unique activities , number of attributes )
++ (Optional) --meta : just meta info of train/test set (output dimension,max prefix length,number of unique activities,number of attributes)
 + (Optional) --filepath : processed train/ test set location ( default='data/processed/' )
 + (Optional) --modelpath : model save path (default='models/model.pt')
 + (Optional) --batchsize : batchsize for input ( default = 32 )
