@@ -6,7 +6,6 @@
 + credit-card-new
 + pub-new
 
-( Cleaned data from https://drive.google.com/open?id=154hcH-HGThlcZJW5zBvCJMZvjOQDsnPR )
 + Structure of the repository
 ``` 
 Imperfection_Pattern
