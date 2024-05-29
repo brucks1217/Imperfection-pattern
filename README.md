@@ -4,7 +4,9 @@
 + credit-card-new ( Synthetic )
 + pub-new ( Synthetic )
 
-
+You can have BPIC15_1, Credit, Pub at below link.
+Please locate them in data/dataset/ folder
+https://drive.google.com/file/d/1KQL7WCyH_oIDUkt8V4zDFEl_KXD-o27N/view?usp=sharing
 
 # Structure of the Repository
 ``` 
