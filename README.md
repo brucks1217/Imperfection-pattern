@@ -6,7 +6,7 @@
 
 
 
-# Structure of the repository
+# Structure of the Repository
 ``` 
 Imperfection_Pattern
  ┣ requirements.txt
@@ -35,6 +35,9 @@ You can download related docker image with :
 ```
 docker pull pytorch/pytorch:2.2.0-cuda11.8-cudnn8-runtime
 ```
+!! If your graphics card's driver version doesn't match the CUDA version or if the CUDA version doesn't match the PyTorch version, it may be not able to train the model using the GPU. 
+(However, it is set up to train on the CPU instead in such cases.)
+
 Libraries that are required for the experiment are in the ```requirements.txt```
 ```
 pip install -r requirements.txt
