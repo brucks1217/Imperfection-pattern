@@ -46,7 +46,7 @@ pip install -r requirements.txt
 
 Example command : 
 ```
-python3 main.py --dataset=BPIC11_f1 --task=next_activity
+python3 main.py --dataset_name=BPIC11_f1 --task=next_activity
 ```
 
 only next_activity, outcome task will work
