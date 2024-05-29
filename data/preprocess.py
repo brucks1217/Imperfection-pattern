@@ -5,7 +5,7 @@ import numpy as np
 import json
 from collections import Counter
 
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from typing import Tuple
 import pandas as pd
 import torch
@@ -100,13 +100,9 @@ class SETGENERATOR:
         return df_train,df_test
     
     
-    def _minmax_scaler(self,df_train, df_test, column) -> Tuple[pd.DataFrame, pd.DataFrame, MinMaxScaler]:
-        min_val = min(df_train[column].min(), df_test[column].min())
-        max_val = max(df_train[column].max(), df_test[column].max())
-        scaler = MinMaxScaler(feature_range=(0, 1))
-        scaler.fit([[min_val], [max_val]])
-
-        df_train[column] = scaler.transform(df_train[[column]])
+    def _scaler(self,df_train, df_test, column) -> Tuple[pd.DataFrame, pd.DataFrame, StandardScaler]:
+        scaler = StandardScaler()
+        df_train[column] = scaler.fit_transform(df_train[[column]])
         df_test[column] = scaler.transform(df_test[[column]])
 
         return df_train, df_test, scaler
@@ -223,8 +219,8 @@ class SETGENERATOR:
         df_train,df_test = self._tokenization(df_train,df_test,COL.ACT.value)
         df_train,df_test = self._tokenization(df_train,df_test,COL.RES.value)
         df_train,df_test = self._time_feature(df_train),self._time_feature(df_test)
-        df_train,df_test,_ = self._minmax_scaler(df_train,df_test,COL.TSP.value)
-        df_train,df_test,_ = self._minmax_scaler(df_train,df_test,COL.TSSC.value)
+        df_train,df_test,_ = self._scaler(df_train,df_test,COL.TSP.value)
+        df_train,df_test,_ = self._scaler(df_train,df_test,COL.TSSC.value)
         if self._task == TASK.NAP.value:
             df_train,df_test,output_dim = self._nap_label(df_train,df_test)
             lab_scaler = None
@@ -235,11 +231,11 @@ class SETGENERATOR:
         elif self._task == TASK.ERTP.value:
             df_train,df_test = self._ertp_label(df_train,df_test)
             output_dim = 1
-            df_train,df_test,lab_scaler = self._minmax_scaler(df_train,df_test,COL.LABEL.value)
+            df_train,df_test,lab_scaler = self._scaler(df_train,df_test,COL.LABEL.value)
         elif self._task == TASK.CRTP.value:
             df_train,df_test = self._crtp_label(df_train,df_test)
             output_dim = 1        
-            df_train,df_test,lab_scaler = self._minmax_scaler(df_train,df_test,COL.LABEL.value)
+            df_train,df_test,lab_scaler = self._scaler(df_train,df_test,COL.LABEL.value)
         num_act, num_res, max_length,inject_act_list = self._meta_scrap(df_train,df_test)
         train_tensor = self._prfx_bucket(df_train,num_res,max_length,True)
         test_tensor = self._prfx_bucket(df_test,num_res,max_length,False, inject_act_list)
