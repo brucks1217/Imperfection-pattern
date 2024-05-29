@@ -247,7 +247,8 @@ class SETGENERATOR:
         
         num_res+=2 # timefeature dimension increase
         num_act+=1 # zero padding dimension increase
-        output_dim+=1 # zero padding dimension increase
+        if self._task == TASK.NAP.value:
+            output_dim+=1 # zero padding dimension increase
         
         
         
