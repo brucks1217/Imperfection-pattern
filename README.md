@@ -1,12 +1,12 @@
 # Datasets
 + BPIC11 
 + BPIC15_1 
-+ credit-card-new
-+ pub-new
++ credit-card-new ( Synthetic )
++ pub-new ( Synthetic )
 
 
 
-+ Structure of the repository
+# Structure of the repository
 ``` 
 Imperfection_Pattern
  ┣ requirements.txt
@@ -21,8 +21,7 @@ Imperfection_Pattern
  ┣ models
  ┃ ┗ model.py
  ┗ utils
-   ┣ config.py
-   ┗ Read.me
+   ┗ config.py
 ```
 
 # Environment 
