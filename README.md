@@ -1,24 +1,8 @@
-# Important Notice : 
-Currently, for reading csv file the script uses "Pandas" module.
-
-However, the memory (RAM) usage efficiency of "Pandas" is terrible.
-
-Tried to use "Numpy" instead, but still it uses lots of memory while processing sequence encoding ( Prefx length + Zero padding ),
-
-so terminal kills the operation. ( Only in BPIC11 )
-
-Hence, I'm working on processing sequence encoding using "PyArrow" library or "Datatable" library. 
-
-Moreover, current datasets in this github repo are not cleaned ( BPIC11, BPIC15_1 )
-and also, don't have outcome label.
-
-So, it will be substituted with cleaned one from  : https://drive.google.com/open?id=154hcH-HGThlcZJW5zBvCJMZvjOQDsnPR
-
 
 
 # Datasets
-+ BPIC11 : will be substituted with cleaned one (TBC) 
-+ BPIC15_1 : will be substituted with cleaned one (TBC) 
++ BPIC11 
++ BPIC15_1 
 + credit-card-new
 + pub-new
 
@@ -27,16 +11,14 @@ So, it will be substituted with cleaned one from  : https://drive.google.com/ope
 ``` 
 Imperfection_Pattern
  ┣ requirements.txt
- ┣ dataset_gen.py
  ┣ main.py
  ┣ data
- ┃ ┣ loader.py
  ┃ ┣ preprocess.py
  ┃ ┗ datasets
  ┃   ┣ BPIC11
- ┃   ┣ BPIC15_1
- ┃   ┣ pub-new
- ┃   ┗ credit-card-new
+ ┃   ┣ BPIC15_1 (will  be uploaded)
+ ┃   ┣ pub-new (will  be uploaded)
+ ┃   ┗ credit-card-new (will  be uploaded)
  ┣ models
  ┃ ┗ model.py
  ┗ utils
@@ -62,12 +44,6 @@ pip install -r requirements.txt
 # Launching Experiment
 ## Generating Train/ Test set
 
-Argument Parser for generating Train/ Test set 
-+ ```--dataset``` : name of your csv file ( choices : "BPIC11.csv", "BPIC15_1.csv", "credit-card-new.csv", "pub-new.csv" )
-+ ```--task``` : PPM task ( choices : "next_activity", "outcome", "event_remaining_time", "case_remaining_time" )
-+ + Remind that "outcome" task is only available with "BPIC15_1.csv" dataset
-+ (Optional) ```--filepath``` : dataset location ( default='data/datasets/' )
-+ (Optional) ```--saveloc``` : processed train/ test set save location ( default='data/processed/' )
 
 Example command : 
 ```
