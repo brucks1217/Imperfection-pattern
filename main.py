@@ -15,11 +15,11 @@ import torch.optim as optim
 import random
 random.seed(42)
 from models.model import MODEL,Train,TestClassification,TestRegression
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, f1_score,mean_squared_error, mean_absolute_error, r2_score
+
 from itertools import product
 
 import json
-import h5py
 
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -72,21 +72,68 @@ parser.add_argument("--result_path", type=str,
 args = parser.parse_args()
 
 
-def interval_accuracy(true_bin,pred_bin,target_bin):
+def metrics_class(group):
+    if len(group) == 0:
+        return pd.Series({
+            'accuracy': 0,  
+            'fscore': 0     
+        })
+    accuracy = accuracy_score(group['true'], group['pred'])
+    fscore = f1_score(group['true'], group['pred'], average='macro')
+    return pd.Series({
+        'accuracy': accuracy,
+        'fscore': fscore
+    })
+
+def interval_perf_class(true_bin, pred_bin, target_bin):
+    df = pd.DataFrame({
+        'true': true_bin,
+        'pred': pred_bin,
+        'target': target_bin,
+    })
+    target_bins = pd.cut(df['target'], bins=[i/10 for i in range(11)], include_lowest=True)
+    df['target_bin'] = target_bins
+
+    each_metric = df.groupby('target_bin').apply(metrics_class).reset_index()
+
+    return each_metric
+
+
+def metrics_reg(group):
+    if len(group) == 0:
+        return pd.Series({
+            'mse': 0,  
+            'mae': 0,  
+            'r2': 0,   
+            'rmse': 0  
+        })
+    mse = mean_squared_error(group['true'], group['pred'])
+    mae = mean_absolute_error(group['true'], group['pred'])
+    r2 = r2_score(group['true'], group['pred'])
+    rmse = np.sqrt(mse)
+    return pd.Series({
+        'mse': mse,
+        'mae': mae,
+        'r2': r2,
+        'rmse': rmse
+    })
+
+
+def interval_perf_reg(true_bin,pred_bin,target_bin):
     df = pd.DataFrame({
         'true': true_bin,
         'pred': pred_bin,
         'target': target_bin,
         })
-    # Divide ratio into intervals (e.g., 0~0.1, 0.1~0.2, ..., 0.9~1.0)
     target_bins = pd.cut(df['target'], bins=[i/10 for i in range(11)], include_lowest=True)
     df['target_bin'] = target_bins
 
-    # Calculate accuracy for each injection ratio or sequence length ratio interval
-    each_accuracy = df.groupby('target_bin').apply(lambda x: accuracy_score(x['true'], x['pred']))
-    each_accuracy = each_accuracy.reset_index().rename(columns={0: 'accuracy'})
-    return each_accuracy
+    target_bins = pd.cut(df['target'], bins=[i/10 for i in range(11)], include_lowest=True)
+    df['target_bin'] = target_bins
 
+    each_metric = df.groupby('target_bin').apply(metrics_reg).reset_index()
+
+    return each_metric
 
 if __name__ == "__main__": 
     if args.dataset_name in ["BPIC15_1_f2", "BPIC11_f1"]:
@@ -135,7 +182,6 @@ if __name__ == "__main__":
                 criterion = nn.BCEWithLogitsLoss()
             else: 
                 criterion = nn.SmoothL1Loss()
-            
             Train(model, train_loader, criterion, optimizer, args.epoch, args.modelpath, args.task)
             
             model.load_state_dict(torch.load(args.modelpath))
@@ -148,26 +194,46 @@ if __name__ == "__main__":
 
 
 
+        if (args.task == TASK.NAP.value) or (args.task == TASK.OP.value):
+            overall_accuracy = accuracy_score(true_bin, pred_bin)
+            overall_fscore = f1_score(true_bin, pred_bin,average='macro')
 
-        overall_accuracy = accuracy_score(true_bin, pred_bin)
-        overall_fscore = f1_score(true_bin, pred_bin,average='macro')
 
+            results_summary = {
+                'overall_accuracy': float(overall_accuracy),
+                'overall_fscore': float(overall_fscore)
+            }
 
-        results_summary = {
-            'overall_accuracy': overall_accuracy,
-            'overall_fscore': overall_fscore
-        }
-
-        with open(f'{args.result_path}{args.dataset_name}-{args.task}{comb[0]}-{comb[1]}-overall.json', 'w') as f:
-            json.dump(results_summary, f)       
-        
-        
-        length_accuracy  = interval_accuracy(true_bin,pred_bin, [x / max(length_bin) for x in length_bin])
-        length_accuracy.to_csv(f'{args.result_path}{args.dataset_name}-{args.task}{comb[0]}-{comb[1]}-length_accuracy.csv', index=False)
-
-        if comb[3] != 'CLEAN':
-            ratio_accuracy = interval_accuracy(true_bin,pred_bin, ratio_bin)
-            ratio_accuracy.to_csv(f'{args.result_path}{args.dataset_name}-{args.task}{comb[0]}-{comb[1]}-ratio_accuracy.csv', index=False)  
-        
-        
+            with open(f'{args.result_path}{args.dataset_name}-{args.task}{comb[0]}-{comb[1]}-overall.json', 'w') as f:
+                json.dump(results_summary, f)       
             
+            
+            length_metric  = interval_perf_class(true_bin,pred_bin, [x / max(length_bin) for x in length_bin])
+            length_metric.to_csv(f'{args.result_path}{args.dataset_name}-{args.task}{comb[0]}-{comb[1]}-length_perf.csv', index=False)
+
+            if comb[3] != 'CLEAN':
+                ratio_metric = interval_perf_class(true_bin,pred_bin, ratio_bin)
+                ratio_metric.to_csv(f'{args.result_path}{args.dataset_name}-{args.task}{comb[0]}-{comb[1]}-ratio_perf.csv', index=False)  
+        
+        else:
+            overall_mse = mean_squared_error(true_bin, pred_bin)
+            overall_mae = mean_absolute_error(true_bin, pred_bin)
+            overall_r2 = r2_score(true_bin, pred_bin)
+            overall_rmse = np.sqrt(overall_mse)
+            results_summary = {
+                'overall_mse': float(overall_mse),
+                'overall_mae': float(overall_mae),
+                'overall_r2': float(overall_r2),
+                'overall_rmse': float(overall_rmse)
+            }
+
+            with open(f'{args.result_path}{args.dataset_name}-{args.task}{comb[0]}-{comb[1]}-overall.json', 'w') as f:
+                json.dump(results_summary, f)       
+            
+            
+            length_metric  = interval_perf_reg(true_bin,pred_bin, [x / max(length_bin) for x in length_bin])
+            length_metric.to_csv(f'{args.result_path}{args.dataset_name}-{args.task}{comb[0]}-{comb[1]}-length_perf.csv', index=False)
+
+            if comb[3] != 'CLEAN':
+                ratio_metric = interval_perf_reg(true_bin,pred_bin, ratio_bin)
+                ratio_metric.to_csv(f'{args.result_path}{args.dataset_name}-{args.task}{comb[0]}-{comb[1]}-ratio_perf.csv', index=False)  
