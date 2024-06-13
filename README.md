@@ -52,4 +52,4 @@ Example command :
 python3 main.py --dataset_name=BPIC11_f1 --task=next_activity
 ```
 
-only next_activity, outcome task will work
+next_activity, outcome, next_event_remaining time, case_remaining_time would work
