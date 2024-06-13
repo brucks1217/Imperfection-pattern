@@ -4,7 +4,6 @@ import os
 import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
-from joblib import Parallel, delayed
 import sys
 
 from utils.config import TASK,INJM
@@ -104,7 +103,6 @@ def TestClassification(model, test_loader, output_dim, task, injection_type):
                 outputs = outputs.gather(1, indices).squeeze(1)
                 indices = (lengths - 1).unsqueeze(1).to(torch.int64).to(device)  # (batch_size, 1)
                 label = label.gather(1, indices).squeeze(1)
-                
                 #print(outputs.size(),label.size())
                 if task == TASK.NAP.value:
                     _, predicted = torch.max(outputs.data, 1)
@@ -192,4 +190,4 @@ def TestRegression(model, test_loader, scaler , injection_type):
     
    # metrics = {'MSE': mse,'MAE': mae,'R2': r2,'RMSE': rmse    }
 
-    return None
+    return true,pred,length_bin,ratio_bin
